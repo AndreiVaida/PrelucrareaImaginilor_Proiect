@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" stylesheets="@../csss/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainWindowController">
+   <children>
+      <MenuBar layoutY="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Image">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#loadImageHandler" text="Load" />
+                  <MenuItem mnemonicParsing="false" onAction="#exportImageHandler" text="Export" />
+                  <MenuItem mnemonicParsing="false" onAction="#resetToOriginalHandler" text="Reset to original" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <VBox layoutX="14.0" layoutY="36.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="34.0">
+         <children>
+            <HBox fx:id="containerWhiteBalance">
+               <children>
+                  <Label text="White Balance:">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="sliderWhiteBalance" blockIncrement="100.0" majorTickUnit="500.0" max="10000.0" min="1000.0" minorTickCount="100" prefWidth="255.0" showTickLabels="true" showTickMarks="true" value="5000.0">
+                     <HBox.margin>
+                        <Insets top="4.0" />
+                     </HBox.margin>
+                  </Slider>
+                  <TextField fx:id="textFieldWhiteBalance" onKeyReleased="#changeWhiteBalanceTextFieldHandler" prefWidth="50.0" promptText="Kelvin" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </HBox>
+            <Button mnemonicParsing="false" onAction="#autoWhiteBalanceHandler" text="Auto White Balance" />
+            <HBox fx:id="containerSaturation" layoutX="10.0" layoutY="10.0">
+               <children>
+                  <Label text="Saturation:">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="sliderSaturation" blockIncrement="5.0" min="-100.0" minorTickCount="5" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
+                     <HBox.margin>
+                        <Insets top="4.0" />
+                     </HBox.margin>
+                  </Slider>
+                  <TextField fx:id="textFieldSaturation" onKeyReleased="#changeBTextFieldHandler" prefWidth="50.0" promptText="\%" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox layoutX="14.0" layoutY="136.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0">
+         <children>
+            <Label text="Original image" textFill="#808080">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+            <ImageView fx:id="toEditImageView" fitHeight="450.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </VBox>
+      <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="575.0" layoutY="275.0" onMouseClicked="#setEditedImageInToEditViewHandler" pickOnBounds="true" preserveRatio="true" styleClass="clicklable" AnchorPane.bottomAnchor="275.0" AnchorPane.rightAnchor="575.0">
+         <image>
+            <Image url="@../images/left-arrow.png" />
+         </image>
+      </ImageView>
+      <VBox layoutX="636.0" layoutY="136.0" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0">
+         <children>
+            <Label text="Edited image" textFill="#808080">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+            <ImageView fx:id="editedImageView" fitHeight="450.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
