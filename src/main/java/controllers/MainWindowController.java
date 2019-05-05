@@ -100,6 +100,7 @@ public class MainWindowController {
             }
             saturationValue = newValue.intValue();
             textFieldSaturation.setText(String.valueOf(saturationValue));
+            currentFilter = this::changeSaturation;
             currentFilter.apply(null);
         });
     }
@@ -265,6 +266,15 @@ public class MainWindowController {
 
         final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
         service.autoWhiteBalanceBySelectedPixel(rgbImage, selectedPixelColor);
+        editedImage = ImageConverter.rgbImageToImage(rgbImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    // Saturation
+    private Void changeSaturation(Void aVoid) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        service.changeSaturation(rgbImage, saturationValue);
         editedImage = ImageConverter.rgbImageToImage(rgbImage);
         editedImageView.setImage(editedImage);
         return null;

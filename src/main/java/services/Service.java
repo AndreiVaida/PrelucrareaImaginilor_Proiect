@@ -8,6 +8,18 @@ import static converters.ImageConverter.clamp;
 
 public class Service {
 
+    private static int[][] multiplyMatrices(final double[][] matrixA, final int[][] matrixB, final int heightA, final int widthA, final int widthB) {
+        int[][] matrixC = new int[heightA][widthB];
+        for (int i = 0; i < heightA; i++) {
+            for (int j = 0; j < widthB; j++) {
+                for (int k = 0; k < widthA; k++) {
+                    matrixC[i][j] += matrixA[i][k] * matrixB[k][j];
+                }
+            }
+        }
+        return matrixC;
+    }
+
     public void autoWhiteBalance(final RGBImage rgbImage) {
         // 1. detect a pixel that should be white
         final RGBPixel whiterPixel = detectWhiterPixel(rgbImage);
@@ -50,7 +62,7 @@ public class Service {
                 final int red = rgbImage.getRedMatrix()[i][j];
                 final int green = rgbImage.getGreenMatrix()[i][j];
                 final int blue = rgbImage.getBlueMatrix()[i][j];
-                final int [][] pixels = new int[3][1];
+                final int[][] pixels = new int[3][1];
                 pixels[0][0] = red;
                 pixels[1][0] = green;
                 pixels[2][0] = blue;
@@ -91,23 +103,11 @@ public class Service {
         return whiterPixel;
     }
 
-    private static int[][] multiplyMatrices(final double[][] matrixA, final int[][] matrixB, final int heightA, final int widthA, final int widthB) {
-        int[][] matrixC = new int[heightA][widthB];
-        for(int i = 0; i < heightA; i++) {
-            for (int j = 0; j < widthB; j++) {
-                for (int k = 0; k < widthA; k++) {
-                    matrixC[i][j] += matrixA[i][k] * matrixB[k][j];
-                }
-            }
-        }
-        return matrixC;
-    }
-
     /**
      * For each pixel:
-     *      r += adjustmentValue
-     *      g = g
-     *      b -= adjustmentValue
+     * r += adjustmentValue
+     * g = g
+     * b -= adjustmentValue
      */
     public void changeWhiteBalance_temperature(final RGBImage rgbImage, final int adjustmentValue) {
         final int height = rgbImage.getHeight();
@@ -128,9 +128,9 @@ public class Service {
 
     /**
      * For each pixel:
-     *      r = r
-     *      g = g - adjustmentValue
-     *      b = b
+     * r = r
+     * g = g - adjustmentValue
+     * b = b
      */
     public void changeWhiteBalance_tint(final RGBImage rgbImage, final int adjustmentValue) {
         final int height = rgbImage.getHeight();
@@ -143,6 +143,37 @@ public class Service {
                 int blue = rgbImage.getBlueMatrix()[i][j];
 
                 green = clamp(green - adjustmentValue);
+                rgbImage.setPixel(i, j, red, green, blue);
+            }
+        }
+    }
+
+    public void changeSaturation(final RGBImage rgbImage, final int adjustmentValue) {
+        final double redPerception = 0.299;
+        final double greenPerception = 0.587;
+        final double bluePerception = 0.114;
+
+        final int height = rgbImage.getHeight();
+        final int width = rgbImage.getWidth();
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                double redD = rgbImage.getRedMatrix()[i][j] / 255.0;
+                double greenD = rgbImage.getGreenMatrix()[i][j] / 255.0;
+                double blueD = rgbImage.getBlueMatrix()[i][j] / 255.0;
+
+                final double brightness = Math.sqrt(redPerception * Math.pow(redD, 2)
+                        + greenPerception * Math.pow(greenD, 2)
+                        + bluePerception * Math.pow(blueD, 2));
+
+
+                final double adjustmentValueD = adjustmentValue / 100.0 + 1;
+                redD = brightness + (redD - brightness) * adjustmentValueD;
+                greenD = brightness + (greenD - brightness) * adjustmentValueD;
+                blueD = brightness + (blueD - brightness) * adjustmentValueD;
+                final int red = clamp((int) (redD * 255));
+                final int green = clamp((int) (greenD * 255));
+                final int blue = clamp((int) (blueD * 255));
                 rgbImage.setPixel(i, j, red, green, blue);
             }
         }
