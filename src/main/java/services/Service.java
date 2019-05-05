@@ -1,8 +1,10 @@
 package services;
 
-import converters.ImageConverter;
 import domain.RGBImage;
 import domain.RGBPixel;
+import javafx.scene.paint.Color;
+
+import static converters.ImageConverter.clamp;
 
 public class Service {
 
@@ -18,6 +20,20 @@ public class Service {
         final double redFactor = 255.0 / whiterPixel.getRed();
         final double greenFactor = 255.0 / whiterPixel.getGreen();
         final double blueFactor = 255.0 / whiterPixel.getBlue();
+        correctWhiteBalance(rgbImage, redFactor, greenFactor, blueFactor);
+    }
+
+    public void autoWhiteBalanceBySelectedPixel(final RGBImage rgbImage, final Color selectedPixelColor) {
+        final int red = (int) (selectedPixelColor.getRed() * 255);
+        final int green = (int) (selectedPixelColor.getGreen() * 255);
+        final int blue = (int) (selectedPixelColor.getBlue() * 255);
+
+        if (red == 255 && green == 255 && blue == 255) {
+            return;
+        }
+        final double redFactor = 255.0 / red;
+        final double greenFactor = 255.0 / green;
+        final double blueFactor = 255.0 / blue;
         correctWhiteBalance(rgbImage, redFactor, greenFactor, blueFactor);
     }
 
@@ -40,9 +56,9 @@ public class Service {
                 pixels[2][0] = blue;
 
                 final int[][] newPixels = multiplyMatrices(correctionMatrix, pixels, 3, 3, 1);
-                final int newRed = ImageConverter.clamp(newPixels[0][0]);
-                final int newGreen = ImageConverter.clamp(newPixels[1][0]);
-                final int newBlue = ImageConverter.clamp(newPixels[2][0]);
+                final int newRed = clamp(newPixels[0][0]);
+                final int newGreen = clamp(newPixels[1][0]);
+                final int newBlue = clamp(newPixels[2][0]);
                 rgbImage.setPixel(i, j, newRed, newGreen, newBlue);
             }
         }
@@ -75,7 +91,7 @@ public class Service {
         return whiterPixel;
     }
 
-    public static int[][] multiplyMatrices(final double[][] matrixA, final int[][] matrixB, final int heightA, final int widthA, final int widthB) {
+    private static int[][] multiplyMatrices(final double[][] matrixA, final int[][] matrixB, final int heightA, final int widthA, final int widthB) {
         int[][] matrixC = new int[heightA][widthB];
         for(int i = 0; i < heightA; i++) {
             for (int j = 0; j < widthB; j++) {
@@ -85,5 +101,50 @@ public class Service {
             }
         }
         return matrixC;
+    }
+
+    /**
+     * For each pixel:
+     *      r += adjustmentValue
+     *      g = g
+     *      b -= adjustmentValue
+     */
+    public void changeWhiteBalance_temperature(final RGBImage rgbImage, final int adjustmentValue) {
+        final int height = rgbImage.getHeight();
+        final int width = rgbImage.getWidth();
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int red = rgbImage.getRedMatrix()[i][j];
+                int green = rgbImage.getGreenMatrix()[i][j];
+                int blue = rgbImage.getBlueMatrix()[i][j];
+
+                red = clamp(red + adjustmentValue);
+                blue = clamp(blue - adjustmentValue);
+                rgbImage.setPixel(i, j, red, green, blue);
+            }
+        }
+    }
+
+    /**
+     * For each pixel:
+     *      r = r
+     *      g = g - adjustmentValue
+     *      b = b
+     */
+    public void changeWhiteBalance_tint(final RGBImage rgbImage, final int adjustmentValue) {
+        final int height = rgbImage.getHeight();
+        final int width = rgbImage.getWidth();
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int red = rgbImage.getRedMatrix()[i][j];
+                int green = rgbImage.getGreenMatrix()[i][j];
+                int blue = rgbImage.getBlueMatrix()[i][j];
+
+                green = clamp(green - adjustmentValue);
+                rgbImage.setPixel(i, j, red, green, blue);
+            }
+        }
     }
 }

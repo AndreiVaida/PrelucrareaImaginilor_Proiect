@@ -12,6 +12,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -30,29 +31,50 @@
       </MenuBar>
       <VBox layoutX="14.0" layoutY="36.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="34.0">
          <children>
-            <HBox fx:id="containerWhiteBalance">
+            <VBox>
                <children>
-                  <Label text="White Balance:">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
+                  <Label text="White Balance">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Slider fx:id="sliderWhiteBalance" blockIncrement="100.0" majorTickUnit="500.0" max="10000.0" min="1000.0" minorTickCount="100" prefWidth="255.0" showTickLabels="true" showTickMarks="true" value="5000.0">
-                     <HBox.margin>
-                        <Insets top="4.0" />
-                     </HBox.margin>
-                  </Slider>
-                  <TextField fx:id="textFieldWhiteBalance" onKeyReleased="#changeWhiteBalanceTextFieldHandler" prefWidth="50.0" promptText="Kelvin" />
+                  <HBox alignment="TOP_RIGHT">
+                     <children>
+                        <Label text="Temperature:">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Slider fx:id="sliderWB_temperature" blockIncrement="5.0" majorTickUnit="10.0" min="-100.0" minorTickCount="5" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
+                           <HBox.margin>
+                              <Insets top="4.0" />
+                           </HBox.margin>
+                        </Slider>
+                        <TextField fx:id="textFieldWB_temperature" onKeyReleased="#changeWB_temperatureTextFieldHandler" prefWidth="50.0" promptText="value" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="TOP_RIGHT" layoutX="10.0" layoutY="30.0">
+                     <children>
+                        <Label text="Tint:">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Slider fx:id="sliderWB_tint" blockIncrement="5.0" majorTickUnit="10.0" min="-100.0" minorTickCount="5" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
+                           <HBox.margin>
+                              <Insets top="4.0" />
+                           </HBox.margin>
+                        </Slider>
+                        <TextField fx:id="textFieldWB_tint" onKeyReleased="#changeWB_tintTextFieldHandler" prefWidth="50.0" promptText="value" />
+                     </children>
+                  </HBox>
+                  <Button mnemonicParsing="false" onAction="#autoWhiteBalanceBySelectedPixelHandler" text="Auto White Balance by selected pixel" />
                </children>
-               <VBox.margin>
-                  <Insets bottom="5.0" />
-               </VBox.margin>
-            </HBox>
-            <Button mnemonicParsing="false" onAction="#autoWhiteBalanceHandler" text="Auto White Balance" />
-            <HBox fx:id="containerSaturation" layoutX="10.0" layoutY="10.0">
+            </VBox>
+            <HBox layoutX="10.0" layoutY="10.0">
                <children>
                   <Label text="Saturation:">
                      <HBox.margin>
@@ -67,7 +89,7 @@
                         <Insets top="4.0" />
                      </HBox.margin>
                   </Slider>
-                  <TextField fx:id="textFieldSaturation" onKeyReleased="#changeBTextFieldHandler" prefWidth="50.0" promptText="\%" />
+                  <TextField fx:id="textFieldSaturation" onKeyReleased="#changeSaturationTextFieldHandler" prefWidth="50.0" promptText="\%" />
                </children>
                <VBox.margin>
                   <Insets bottom="5.0" top="5.0" />
@@ -77,12 +99,22 @@
       </VBox>
       <VBox layoutX="14.0" layoutY="136.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0">
          <children>
-            <Label text="Original image" textFill="#808080">
-               <VBox.margin>
-                  <Insets bottom="10.0" />
-               </VBox.margin>
-            </Label>
-            <ImageView fx:id="toEditImageView" fitHeight="450.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true" />
+            <HBox>
+               <children>
+                  <Label text="Original image" textFill="#808080" />
+                  <Label text="Selected pixel:" textFill="GREY">
+                     <HBox.margin>
+                        <Insets left="100.0" right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Pane fx:id="paneSelectedPixel" prefHeight="20.0" prefWidth="20.0" />
+                  <Label fx:id="labelSelectedPixel" text="none" />
+               </children>
+               <padding>
+                  <Insets bottom="1.0" />
+               </padding>
+            </HBox>
+            <ImageView fx:id="toEditImageView" fitHeight="450.0" fitWidth="550.0" onMouseClicked="#pixelSelectHandler" pickOnBounds="true" preserveRatio="true" />
          </children>
       </VBox>
       <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="575.0" layoutY="275.0" onMouseClicked="#setEditedImageInToEditViewHandler" pickOnBounds="true" preserveRatio="true" styleClass="clicklable" AnchorPane.bottomAnchor="275.0" AnchorPane.rightAnchor="575.0">
