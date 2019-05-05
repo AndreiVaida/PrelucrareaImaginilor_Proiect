@@ -181,8 +181,9 @@ public class Service {
     public void changeHue(final RGBImage rgbImage, final int adjustmentValue) {
         final int height = rgbImage.getHeight();
         final int width = rgbImage.getWidth();
-        final double u = Math.cos(adjustmentValue * Math.PI / 180.0);
-        final double w = Math.sin(adjustmentValue * Math.PI / 180.0);
+        final double theta = adjustmentValue * Math.PI / 180.0;
+        final double u = Math.cos(theta);
+        final double w = Math.sin(theta);
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
