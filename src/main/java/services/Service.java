@@ -165,17 +165,46 @@ public class Service {
                 final double brightness = Math.sqrt(redPerception * Math.pow(redD, 2)
                         + greenPerception * Math.pow(greenD, 2)
                         + bluePerception * Math.pow(blueD, 2));
-
-
                 final double adjustmentValueD = adjustmentValue / 100.0 + 1;
                 redD = brightness + (redD - brightness) * adjustmentValueD;
                 greenD = brightness + (greenD - brightness) * adjustmentValueD;
                 blueD = brightness + (blueD - brightness) * adjustmentValueD;
+
                 final int red = clamp((int) (redD * 255));
                 final int green = clamp((int) (greenD * 255));
                 final int blue = clamp((int) (blueD * 255));
                 rgbImage.setPixel(i, j, red, green, blue);
             }
         }
+    }
+
+    public void changeHue(final RGBImage rgbImage, final int adjustmentValue) {
+        final int height = rgbImage.getHeight();
+        final int width = rgbImage.getWidth();
+        final double u = Math.cos(adjustmentValue * Math.PI / 180.0);
+        final double w = Math.sin(adjustmentValue * Math.PI / 180.0);
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                final double redD = rgbImage.getRedMatrix()[i][j] / 255.0;
+                final double greenD = rgbImage.getGreenMatrix()[i][j] / 255.0;
+                final double blueD = rgbImage.getBlueMatrix()[i][j] / 255.0;
+                final double newRedD = (.299 + .701 * u + .168 * w) * redD
+                        + (.587 - .587 * u + .330 * w) * greenD
+                        + (.114 - .114 * u - .497 * w) * blueD;
+                final double newGreenD = (.299 - .299 * u - .328 * w) * redD
+                        + (.587 + .413 * u + .035 * w) * greenD
+                        + (.114 - .114 * u + .292 * w) * blueD;
+                final double newBlueD = (.299 - .3 * u + 1.25 * w) * redD
+                        + (.587 - .588 * u - 1.05 * w) * greenD
+                        + (.114 + .886 * u - .203 * w) * blueD;
+
+                final int red = clamp((int) (newRedD * 255));
+                final int green = clamp((int) (newGreenD * 255));
+                final int blue = clamp((int) (newBlueD * 255));
+                rgbImage.setPixel(i, j, red, green, blue);
+            }
+        }
+
     }
 }

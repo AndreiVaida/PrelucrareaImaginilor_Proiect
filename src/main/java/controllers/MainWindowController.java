@@ -46,11 +46,15 @@ public class MainWindowController {
     @FXML
     private Slider sliderSaturation;
     @FXML
+    private Slider sliderHue;
+    @FXML
     private TextField textFieldWB_temperature;
     @FXML
     private TextField textFieldWB_tint;
     @FXML
     private TextField textFieldSaturation;
+    @FXML
+    private TextField textFieldHue;
     private Function<Void, Void> currentFilter;
     private Image originalImage;
     private Image toEditImage;
@@ -59,6 +63,7 @@ public class MainWindowController {
     private int whiteBalance_temperatureValue;
     private int whiteBalance_tintValue;
     private int saturationValue;
+    private int hueValue;
     private boolean changedByUser = true;
 
     public MainWindowController() {
@@ -101,6 +106,15 @@ public class MainWindowController {
             saturationValue = newValue.intValue();
             textFieldSaturation.setText(String.valueOf(saturationValue));
             currentFilter = this::changeSaturation;
+            currentFilter.apply(null);
+        });
+        sliderHue.valueProperty().addListener((observableValue, previousValue, newValue) -> {
+            if (!changedByUser) {
+                return;
+            }
+            hueValue = newValue.intValue();
+            textFieldHue.setText(String.valueOf(hueValue));
+            currentFilter = this::changeHue;
             currentFilter.apply(null);
         });
     }
@@ -232,6 +246,17 @@ public class MainWindowController {
         }
     }
 
+    @FXML
+    public void changeHueTextFieldHandler(final KeyEvent keyEvent) {
+        try {
+            hueValue = Integer.valueOf(textFieldHue.getText());
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                sliderHue.setValue(hueValue);
+            }
+        } catch (NumberFormatException ignored) {
+        }
+    }
+
     // White Balance
     private Void changeWB_temperature(Void aVoid) {
         final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
@@ -275,6 +300,15 @@ public class MainWindowController {
     private Void changeSaturation(Void aVoid) {
         final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
         service.changeSaturation(rgbImage, saturationValue);
+        editedImage = ImageConverter.rgbImageToImage(rgbImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    // Hue
+    private Void changeHue(Void aVoid) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        service.changeHue(rgbImage, hueValue);
         editedImage = ImageConverter.rgbImageToImage(rgbImage);
         editedImageView.setImage(editedImage);
         return null;
