@@ -24,7 +24,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Thread.setDefaultUncaughtExceptionHandler(Main::showError);
         final Parent root = FXMLLoader.load(getClass().getResource("../../resources/fxmls/mainWindow.fxml"));
-        primaryStage.setTitle("Prelucrarea imaginilor");
+        primaryStage.setTitle("Prelucrarea imaginilor - proiect „Ajustarea culorilor”");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
